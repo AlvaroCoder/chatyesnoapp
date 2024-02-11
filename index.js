@@ -4,6 +4,7 @@ import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, GoogleAuth
 
 import { getDatabase, ref, onValue, set, child, push , get, query, equalTo, orderByChild, orderByKey } from 'https://www.gstatic.com/firebasejs/10.4.0/firebase-database.js';
 //import { getDatabase, ref, onValue, set, child, push, get, query, equalTo, orderByChild} from 'firebase/database'
+const URL_ROBOT = "https://res.cloudinary.com/dabyqnijl/image/upload/v1707618601/robot_pkuie2.png"
 const firebaseConfig = {
     apiKey: "AIzaSyDx5nz-11rOvp2t7IVC7jf8oifW0u0ArL8",
     authDomain: "chatyesno.firebaseapp.com",
@@ -76,7 +77,7 @@ function getDatabaseMessage() {
         containerMessages.innerHTML = ""
         llaves.forEach(llave=>{
             var mensajeElement = document.createElement('div');
-            mensajeElement.classList.add( 'text-white', 'my-2', 'flex','items-center');
+            mensajeElement.classList.add( 'text-white', 'my-2', 'flex',);
             if (data[llave]['idUser']==idUser) {
                 mensajeElement.classList.add('flex-row-reverse','justify-start')
             }
@@ -85,9 +86,10 @@ function getDatabaseMessage() {
                 var imagenMensaje = document.createElement('img');
                 imagenMensaje.src = data[llave]['urlImagen'];
                 imagenMensaje.alt = 'Imagen del mensaje';
-                imagenMensaje.classList.add('w-12', 'h-12', 'mr-2', 'object-cover', 'rounded-full');
+                imagenMensaje.classList.add('w-12', 'h-12', 'mr-2', 'object-cover', 'rounded-full', 'bg-blanco');
                 mensajeElement.appendChild(imagenMensaje);
             }
+
             // Agregar el texto del mensaje
             var containerMensaje = document.createElement('div');
             containerMensaje.classList.add('mr-2','bg-azul_marino','rounded-lg', 'p-2','flex', 'flex-col');
@@ -100,6 +102,16 @@ function getDatabaseMessage() {
             var textoMensaje = document.createElement('p');
             textoMensaje.textContent = data[llave]['message'];
             containerMensaje.appendChild(textoMensaje);
+
+            // Crea una imagen de sticker
+            if (data[llave]['stickerMessage']) {
+                var imagenSticker = document.createElement('img');
+                imagenSticker.src = data[llave]['stickerMessage'];
+                imagenSticker.alt = "Imagen de un sticker";
+                imagenSticker.classList.add('w-44', 'h-32', 'object-cover')
+                containerMensaje.appendChild(imagenSticker);
+
+            }
 
             if (data[llave]['idUser']==idUser) {
                 containerMensaje.classList.add('items-end')
@@ -117,7 +129,12 @@ function continuarPantalla() {
     document.getElementById("pantallaAvatars").style.display="block"
 }
 
-
+function consultarApiYesNo() {
+    const urlYesNo = "https://yesno.wtf/api";
+    return fetch(urlYesNo,{
+        method : 'GET'
+    })
+}
 
 async function pushMessageToDatabase(e) {
     e.preventDefault();
@@ -125,6 +142,7 @@ async function pushMessageToDatabase(e) {
     
     const messageInput = document.getElementById('message');
     const message = messageInput.value;
+
     const userRef = ref(database,'users');
 
     const response = await get(
@@ -142,6 +160,20 @@ async function pushMessageToDatabase(e) {
     }
 
     push(ref(database,'messages/'), dataToSend);
+
+    const splitMessage = String(message).split(" ");
+    if (splitMessage[0]=="#yesno") {
+        const responseYesNoApi = await consultarApiYesNo();
+        const jsonResponseYesNoApi = await responseYesNoApi.json();
+        const dataToSendRobot = {
+            idUser,
+            message : jsonResponseYesNoApi['answer'],
+            urlImagen : URL_ROBOT,
+            username : "Robot",    
+            stickerMessage : jsonResponseYesNoApi['image']
+        }
+        push(ref(database,'messages/'), dataToSendRobot);
+    }
 
     messageInput.textContent = ""
     messageInput.value = ""
