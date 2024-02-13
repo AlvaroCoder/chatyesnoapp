@@ -1,19 +1,17 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js'
 import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup  } from 'https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js';
-// import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup  } from 'firebase/auth';
-
 import { getDatabase, ref, onValue, set, child, push , get, query, equalTo, orderByChild, orderByKey } from 'https://www.gstatic.com/firebasejs/10.4.0/firebase-database.js';
-//import { getDatabase, ref, onValue, set, child, push, get, query, equalTo, orderByChild} from 'firebase/database'
+
 const URL_ROBOT = "https://res.cloudinary.com/dabyqnijl/image/upload/v1707618601/robot_pkuie2.png"
 const firebaseConfig = {
-    apiKey: "AIzaSyDx5nz-11rOvp2t7IVC7jf8oifW0u0ArL8",
-    authDomain: "chatyesno.firebaseapp.com",
-    projectId: "chatyesno",
-    storageBucket: "chatyesno.appspot.com",
-    messagingSenderId: "718159040167",
-    appId: "1:718159040167:web:b874959195ea94660d9582",
-    measurementId: "G-XDP5Z0PTGW",
-    databaseURL : "https://chatyesno-default-rtdb.firebaseio.com/"
+    apiKey: process.env.FIREBASE_API_KEY,
+    authDomain: process.env.FIREBASE_AUTH_DOMAIN,
+    projectId: process.env.FIREBASE_PROJECT_ID,
+    storageBucket: process.env.FIREBASE_STORAGEBUCKET,
+    messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER,
+    appId: process.env.FIREBASE_APP_ID,
+    measurementId: process.env.FIREBASE_MEASUREMENT_ID,
+    databaseURL : process.env.FIREBASE_DATABASE_URL
 };
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
